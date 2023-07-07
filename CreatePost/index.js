@@ -10,7 +10,7 @@ const { validateBody } = require('../middlewares/validator');
 const schema = Joi.object().keys({
 	blog: Joi.string().required(),
 	title: Joi.string().required(),
-	content: Joi.string().required()
+	content: Joi.string().required(),
 });
 
 const createPost = new MiddlewareHandler()

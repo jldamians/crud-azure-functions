@@ -11,7 +11,7 @@ const updatePostHandler = async (context, req) => {
 
 		const entity = {
 				PartitionKey: { '_': blog },
-				RowKey: { '_': id.toString() }
+				RowKey: { '_': id.toString() },
 		};
 
 		if (title) {
