@@ -1,44 +1,32 @@
 'use strict';
 
-const { insertEntity } = require('../services/TableService');
+const Joi = require('joi');
+const { StatusCodes } = require('http-status-codes');
+const MiddlewareHandler = require('azure-middleware');
 
-module.exports = async function (context, req) {
-    try {
-        if (!req.body) {
-            context.res = {
-                status: 400,
-                body: 'Please pass a request body',
-            };
-            return;
-        }
+const createPostHandler = require('./handler');
+const { validateBody } = require('../middlewares/validator');
 
-        const { blog, title, content } = req.body;
+const schema = Joi.object().keys({
+	blog: Joi.string().required(),
+	title: Joi.string().required(),
+	content: Joi.string().required()
+});
 
-        if (!blog || !title || !content) {
-            context.res = {
-                status: 400,
-                body: 'Please pass blog, title and content',
-            };
-            return;
-        }
+const createPost = new MiddlewareHandler()
+	.use((context) => {
+		// this is where to put your middleware logic
+		validateBody(context, context.req.body, schema);
+		context.next();
+	})
+	.use(createPostHandler)
+	.catch((error, context) => {
+		context.res = {
+			status: StatusCodes.INTERNAL_SERVER_ERROR,
+			body: error.message
+		};
+		context.done();
+	})
+	.listen();
 
-        const entity = {
-            PartitionKey: { '_': blog },
-            RowKey: { '_': new Date().getTime().toString() },
-            title: { '_': title },
-            content: { '_': content },
-        };
-
-        const result = await insertEntity('Posts', entity);
-
-        context.res = {
-            status: 200,
-            body: result,
-        };        
-    } catch (error) {
-        context.res = {
-            status: 500,
-            body: error.message,
-        };    
-    }
-}
+module.exports = createPost;

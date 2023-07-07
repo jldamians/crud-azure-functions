@@ -8,6 +8,9 @@
   },
   "devDependencies": {},
   "dependencies": {
-    "azure-storage": "^2.10.7"
+    "azure-middleware": "^1.0.1",
+    "azure-storage": "^2.10.7",
+    "http-status-codes": "^2.2.0",
+    "joi": "^17.9.2"
   }
 }
